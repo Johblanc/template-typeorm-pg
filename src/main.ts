@@ -3,9 +3,15 @@ import { AppModule } from './app.module';
 import { ResponserExeption } from './interceptors/responser.exeption';
 import { ResponserInterceptor } from './interceptors/responser.interceptor';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(
+    helmet.crossOriginResourcePolicy({
+      policy: 'cross-origin',
+    }),
+  );
   app.setGlobalPrefix('api/');
   app.enableCors({
     origin: [process.env.SITE_URL!],              // Adresses autorisées à interroger l'API
