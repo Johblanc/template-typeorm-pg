@@ -1,7 +1,8 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ResponserExeption } from './interceptors/responser.exeption';
 import { ResponserInterceptor } from './interceptors/responser.interceptor';
+import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,8 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],  // Methodes de requete autorisées
     credentials: true,                            // Transmition du header de la requete
   });
+  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalInterceptors(new ResponserInterceptor());
   app.useGlobalFilters(new ResponserExeption());
   await app.listen(8000);
