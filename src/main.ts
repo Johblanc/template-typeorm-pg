@@ -4,6 +4,7 @@ import { ResponserExeption } from './interceptors/responser.exeption';
 import { ResponserInterceptor } from './interceptors/responser.interceptor';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import helmet from 'helmet';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,13 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],  // Methodes de requete autorisées
     credentials: true,                            // Transmition du header de la requete
   });
+  const config = new DocumentBuilder()
+    .setTitle('titre API')
+    .setDescription('description API')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalInterceptors(new ResponserInterceptor());
