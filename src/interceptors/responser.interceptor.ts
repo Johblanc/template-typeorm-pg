@@ -21,7 +21,7 @@ export class ResponserInterceptor implements NestInterceptor
     return next
       .handle()
       .pipe(
-        map((value? : { message : string, data : any}) => {
+        map((value? : { message : string, data : any, token : string}) => {
 
           if (value) {
             console.log(`${context.getArgs()[0].method} | ${context.getArgs()[1].statusCode} | ${context.getArgs()[0].url}\nDelais : ${Date.now() - now}ms\n${value.message }`)
@@ -31,6 +31,7 @@ export class ResponserInterceptor implements NestInterceptor
                 path: context.getArgs()[0].url,
                 message : value.message,
                 data : value.data,
+                token : value.token,
             }
           }
           else {

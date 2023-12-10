@@ -1,9 +1,13 @@
 
 import * as bcrypt from 'bcrypt';
-import { Body, ConflictException, Controller, Post } from '@nestjs/common';
+import { Body, ConflictException, Controller, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiTags } from '@nestjs/swagger';
 import { RegisterDto } from './dto/register.dto';
+import { GetToken } from 'src/auth/get-token.decorator';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { LocalAuthGuard } from 'src/auth/local_guard/local-auth.guard';
+import { User } from './entities/user.entity';
 
 /**
  * Routage et contrôle des requetes pour la table users
@@ -39,5 +43,16 @@ export class UsersController {
       data: newUser,
     };
   }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@GetUser() user: User, @GetToken() token : string) {
+    return {
+      message: 'Vous êtes connecté',
+      data: user,
+      token: token
+    }
+  }
+
   /* Ajouter les methodes de service ici */
 }
