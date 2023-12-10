@@ -26,6 +26,36 @@ export class UsersService {
     return await User.findOneBy({ pseudo });
   }
 
+  /**
+   * Trouver un utilisateur par son mail
+   *
+   * @param mail mail de l'utilisateur recherché
+   * @returns l'utilisateur, si il existe, sinon null
+   */
+  async findOneByMail(mail: string): Promise<User | null> {
+    return await User.findOneBy({ mail });
+  }
+
   
+  /**
+   * Mise à jour d'un utilisateur
+   *
+   * @param id L'id de l'utilisateur à mettre à jour
+   * @param dto parametres de modification d'un utilisateur
+   * @returns l'utilisateur modifié
+   */
+  async update(id: string, dto: Partial<User>): Promise<User | null> {
+    const user = await User.findOneBy({id})
+    if (user){
+      if (dto.pseudo) user.pseudo = dto.pseudo ;
+      if (dto.password) user.password = dto.password ;
+      if (dto.mail) user.mail = dto.mail ;
+      if (dto.first_name) user.first_name = dto.first_name ;
+      if (dto.last_name) user.last_name = dto.last_name ;
+      await user.save();
+    }
+    return user
+  }
+
   /* Ajouter les methodes de service ici */
 }

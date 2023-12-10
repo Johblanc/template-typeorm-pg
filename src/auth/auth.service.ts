@@ -54,4 +54,38 @@ export class AuthService {
     }
     return null;
   }
+
+  /**
+   * Trouver un utilisateur par token
+   *
+   * @param token token de l'utilisateur recherché
+   * @returns l'utilisateur, si il existe, sinon null
+   */
+  async findOneByToken(token: {
+    pseudo: string;
+    sub: string;
+    iat: number;
+  }): Promise<(Partial<User> & { token: string }) | null> {
+    const user = await User.findOne({where :{ pseudo: token.pseudo, id: token.sub },select:{
+      id: true,
+      pseudo: true,
+      first_name: true,
+      last_name: true,
+      creat_at: true,
+      actif_at: true,
+      mail: true
+    }});
+    
+
+    if (user !== null) {
+      user.actif_at = new Date().toISOString();
+      await user.save();
+      return {
+        ...user,
+        token: this.token(user),
+      };
+    }
+
+    return null;
+  }
 }
