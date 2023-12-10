@@ -36,6 +36,15 @@ export class UsersService {
     return await User.findOneBy({ mail });
   }
 
+  /**
+   * Trouver un utilisateur par son id
+   *
+   * @param id id de l'utilisateur recherché
+   * @returns l'utilisateur, si il existe, sinon null
+   */
+  async findOneById(id: string): Promise<User | null> {
+    return await User.findOneBy({ id });
+  }
   
   /**
    * Mise à jour d'un utilisateur

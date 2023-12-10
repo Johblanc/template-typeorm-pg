@@ -1,6 +1,6 @@
 
 import * as bcrypt from 'bcrypt';
-import { Body, ConflictException, Controller, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RegisterDto } from './dto/register.dto';
@@ -91,6 +91,21 @@ export class UsersController {
         user.id,
         dto,
       ),
+      token: token,
+    };
+  }
+  
+  @ApiBearerAuth()
+  @UseGuards(UserAuthGuard)
+  @Get(':id')
+  async getOne(@Param('id') id: string, @GetToken() token: string) {
+    const user = await this.usersService.findOneById(id);
+    if (user === null) {
+      throw new NotFoundException("L'utilisateur n'est pas enregistré");
+    }
+    return {
+      message: "Récupération d'un utilisateur",
+      data: user,
       token: token,
     };
   }
