@@ -1,6 +1,16 @@
-
 import * as bcrypt from 'bcrypt';
-import { Body, ConflictException, Controller, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RegisterDto } from './dto/register.dto';
@@ -10,6 +20,8 @@ import { LocalAuthGuard } from 'src/auth/local_guard/local-auth.guard';
 import { User } from './entities/user.entity';
 import { UserAuthGuard } from 'src/auth/user_guard/user-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { GetUsersQueryDto } from './dto/get-users.query.dto';
+import { pagingGenerator } from 'src/utilities/Paging/Paging.generator';
 
 /**
  * Routage et contrôle des requetes pour la table users
@@ -17,10 +29,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-  ) {}
-  
+  constructor(private readonly usersService: UsersService) {}
+
   /**
    * Demande d'enregistrement d'un utilisateur
    *
@@ -35,7 +45,7 @@ export class UsersController {
       throw new ConflictException('Ce Pseudo est déjà enregistré');
     }
 
-    const salt = await bcrypt.genSalt(10)
+    const salt = await bcrypt.genSalt(10);
 
     dto.password = await bcrypt.hash(dto.password, salt);
 
@@ -48,12 +58,12 @@ export class UsersController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@GetUser() user: User, @GetToken() token : string) {
+  async login(@GetUser() user: User, @GetToken() token: string) {
     return {
       message: 'Vous êtes connecté',
       data: user,
-      token: token
-    }
+      token: token,
+    };
   }
 
   /**
@@ -66,7 +76,11 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(UserAuthGuard)
   @Patch()
-  async update(@GetUser() user: User, @GetToken() token : string, @Body() dto: UpdateUserDto) {
+  async update(
+    @GetUser() user: User,
+    @GetToken() token: string,
+    @Body() dto: UpdateUserDto,
+  ) {
     if (dto.pseudo) {
       const pseudoExist = await this.usersService.findOneByPseudo(dto.pseudo);
 
@@ -78,23 +92,26 @@ export class UsersController {
       dto.password = await bcrypt.hash(dto.password, 10);
     }
 
-    if (dto.mail){
+    if (dto.mail) {
       const mailExist = await this.usersService.findOneByMail(dto.mail);
-      
+
       if (mailExist && dto.mail !== user.mail) {
-        throw new ConflictException("Ce Mail est déjà enregistré");
+        throw new ConflictException('Ce Mail est déjà enregistré');
       }
     }
+
     return {
       message: 'Profile mis à jour',
-      data:  await this.usersService.update(
-        user.id,
-        dto,
-      ),
+      data: await this.usersService.update(user.id, dto),
       token: token,
     };
   }
-  
+
+  /**
+   * Récupération d'un utilisateur
+   *
+   * @returns l'utilisateur recherché
+   */
   @ApiBearerAuth()
   @UseGuards(UserAuthGuard)
   @Get(':id')
@@ -109,5 +126,28 @@ export class UsersController {
       token: token,
     };
   }
-  /* Ajouter les methodes de service ici */
+
+  /**
+   * Récupération d'un utilisateur
+   *
+   * @returns l'utilisateur recherché
+   */
+  @ApiBearerAuth()
+  @UseGuards(UserAuthGuard)
+  @Get()
+  async getMany(@Query() query: GetUsersQueryDto, @GetToken() token: string) {
+    const users = await this.usersService.findMany(query);
+
+    const { pages, data } = pagingGenerator<GetUsersQueryDto, User>(
+      query,
+      users,
+    );
+
+    return {
+      message: 'Plusieurs utilisateurs',
+      data,
+      token,
+      pages,
+    };
+  }
 }
