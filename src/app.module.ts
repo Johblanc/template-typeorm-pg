@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { ExtractorModule } from './extractor/extractor.module';
 
 @Module({
   controllers: [],
@@ -25,6 +26,7 @@ import { UsersModule } from './users/users.module';
       synchronize: true,
     }),
     UsersModule,
+    ExtractorModule,
     /* Ajouter vos Modules */
   ],
 })
