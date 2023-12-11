@@ -23,4 +23,28 @@ export class UsersExcractor {
       mail: true
     }});
   }
+
+  /**
+   * Suppression de tous les utilisateurs
+   *
+   * @returns Tous les utilisateurs supprimés
+   */
+  async clear() {
+    return await User.remove(await User.find());
+  }
+
+  /**
+   * Reinitialisation des utilisateurs
+   *
+   * @returns Tous les utilisateurs
+   */
+  async reset(users: User[]) {
+    return await Promise.all(
+      users.map(async (item) => {
+        const newUser = User.create(item);
+        newUser.id = item.id;
+        return await newUser.save();
+      }),
+    );
+  }
 }
