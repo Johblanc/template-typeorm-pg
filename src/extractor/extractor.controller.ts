@@ -10,11 +10,10 @@ import {
 import { Response } from 'express';
 import * as fs from 'fs';
 import * as AdmZip from 'adm-zip';
-import { FilesInterceptor } from '@nestjs/platform-express';
 import { UsersExcractor } from './extractor.users.service';
 import { UserAuthGuard } from 'src/auth/user_guard/user-auth.guard';
-import { zipFileFilter } from '../utilities/FileFilter/zip.file-filter';
 import { ApiTags } from '@nestjs/swagger';
+import { ArchiveFileInterceptor } from 'src/utilities/FileInterceptors/archive.file-interceptor';
 
 @ApiTags('setup')
 @Controller()
@@ -59,11 +58,7 @@ export class ExtractorController {
   /** Réhinitialisation de la BdD depuis une archive zip */
   @UseGuards(UserAuthGuard)
   @Post('reset')
-  @UseInterceptors(
-    FilesInterceptor('files', undefined, {
-      fileFilter: zipFileFilter,
-    }),
-  )
+  @UseInterceptors(ArchiveFileInterceptor)
   async reset(@UploadedFiles() savedFiles: Express.Multer.File[] = []) {
 
     /* Suppression du dossier data */
