@@ -86,6 +86,7 @@ export class UsersService {
       if (dto.mail!== undefined) user.mail = dto.mail;
       if (dto.first_name!== undefined) user.first_name = dto.first_name;
       if (dto.last_name!== undefined) user.last_name = dto.last_name;
+      if (dto.image!== undefined) user.image = dto.image;
       await user.save();
     }
     return user;

@@ -1,5 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { fileRemover } from 'src/utilities/Files/fileRemover';
 
 /**
  * Permet de récupérer l'enssemble des Exceptions issues des divers controleurs.
@@ -21,6 +22,11 @@ export class ResponserExeption implements ExceptionFilter
     const status = exception.getStatus();
     const exept : string | {statusCode?: number, message?:string,error?:string} = exception.getResponse();
 
+    const files = (request.files || []) as Express.Multer.File[]
+
+    if (files.length > 0){
+      (files).forEach((file)=> fileRemover(file.path))
+    }
     
     if (typeof exept === "object")
     {

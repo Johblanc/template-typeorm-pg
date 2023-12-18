@@ -9,7 +9,9 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -22,6 +24,8 @@ import { UserAuthGuard } from 'src/auth/user_guard/user-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUsersQueryDto } from './dto/get-users.query.dto';
 import { pagingGenerator } from 'src/utilities/Paging/Paging.generator';
+import { UserImageFileInterceptor } from 'src/utilities/FileInterceptors/userPhoto.file-interceptor';
+import { ImagesService } from 'src/images/images.service';
 
 /**
  * Routage et contrôle des requetes pour la table users
@@ -29,7 +33,10 @@ import { pagingGenerator } from 'src/utilities/Paging/Paging.generator';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly imagesService: ImagesService,
+  ) {}
 
   /**
    * Demande d'enregistrement d'un utilisateur
@@ -75,12 +82,15 @@ export class UsersController {
    */
   @ApiBearerAuth()
   @UseGuards(UserAuthGuard)
+  @UseInterceptors(UserImageFileInterceptor)
   @Patch()
   async update(
     @GetUser() user: User,
     @GetToken() token: string,
     @Body() dto: UpdateUserDto,
+    @UploadedFiles() savedFiles: Express.Multer.File[] = [],
   ) {
+
     if (dto.pseudo) {
       const pseudoExist = await this.usersService.findOneByPseudo(dto.pseudo);
 
@@ -100,9 +110,24 @@ export class UsersController {
       }
     }
 
+    let updateUser = await this.usersService.update(user.id, dto) as User
+
+    if (savedFiles.length > 0){
+
+      if (updateUser.image !== null){
+        await this.usersService.update(user.id, {image : null}) ;
+        await this.imagesService.remove(updateUser.image.dir, updateUser.image.file)
+      }
+
+      const image = await this.imagesService.createOrUpdate(savedFiles[0],"img/users",updateUser!.id, `Avatar ${updateUser!.pseudo}`)
+  
+      updateUser = await this.usersService.update(user.id, {image}) as User
+    }
+
+
     return {
       message: 'Profile mis à jour',
-      data: await this.usersService.update(user.id, dto),
+      data: updateUser,
       token: token,
     };
   }
