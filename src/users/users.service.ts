@@ -81,11 +81,11 @@ export class UsersService {
   async update(id: string, dto: Partial<User>): Promise<User | null> {
     const user = await User.findOneBy({ id });
     if (user) {
-      if (dto.pseudo) user.pseudo = dto.pseudo;
-      if (dto.password) user.password = dto.password;
-      if (dto.mail) user.mail = dto.mail;
-      if (dto.first_name) user.first_name = dto.first_name;
-      if (dto.last_name) user.last_name = dto.last_name;
+      if (dto.pseudo!== undefined) user.pseudo = dto.pseudo;
+      if (dto.password!== undefined) user.password = dto.password;
+      if (dto.mail!== undefined) user.mail = dto.mail;
+      if (dto.first_name!== undefined) user.first_name = dto.first_name;
+      if (dto.last_name!== undefined) user.last_name = dto.last_name;
       await user.save();
     }
     return user;
