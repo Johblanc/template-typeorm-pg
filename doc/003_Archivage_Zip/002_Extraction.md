@@ -44,7 +44,7 @@ Dans le fichier ```.gitignore``` :
 /data
 ```
 
-## Service UsersExcractor
+## Service UsersExtractor
 
 Dans le fichier ```src/extractor/extractor.users.service.ts``` ajouter la methode :
 
@@ -77,7 +77,7 @@ import {
 import { Response } from 'express';
 import * as fs from 'fs';
 import * as AdmZip from 'adm-zip';
-import { UsersExcractor } from './extractor.users.service';
+import { UsersExtractor } from './extractor.users.service';
 import { UserAuthGuard } from 'src/auth/user_guard/user-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -85,7 +85,7 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller()
 export class ExtractorController {
   constructor(
-    private readonly usersExtractor : UsersExcractor
+    private readonly usersExtractor : UsersExtractor
     /* Pour chaque table ajouter un Excractor */
   ) {}
 

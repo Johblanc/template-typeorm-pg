@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ExtractorController } from "./extractor.controller";
-import { UsersExcractor } from "./extractor.users.service";
+import { UsersExtractor } from "./extractor.users.service";
 
 
 
@@ -10,7 +10,7 @@ import { UsersExcractor } from "./extractor.users.service";
 @Module({
   imports : [],
   controllers: [ExtractorController],
-  providers: [UsersExcractor],
+  providers: [UsersExtractor],
   exports: [],
 })
 export class ExtractorModule {}

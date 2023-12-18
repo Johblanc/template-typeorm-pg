@@ -12,7 +12,7 @@ Pour simplifier l'usage de l'extraction, il nous faut créer un nouveau Module q
 
 Commencer par la structure du dossier.
 
-## Service UsersExcractor
+## Service UsersExtractor
 
 Créer un fichier ```src/extractor/extractor.users.service.ts``` :
 
@@ -20,7 +20,7 @@ Créer un fichier ```src/extractor/extractor.users.service.ts``` :
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class UsersExcractor {
+export class UsersExtractor {
   /* Les Methodes iront ici */
 }
 ```
@@ -32,13 +32,13 @@ Créer un fichier ```src/extractor/extractor.controller.ts``` :
 ```ts
 import { ApiTags } from '@nestjs/swagger';
 import { Controller } from '@nestjs/common';
-import { UsersExcractor } from './extractor.users.service';
+import { UsersExtractor } from './extractor.users.service';
 
 @ApiTags('setup')
 @Controller()
 export class ExtractorController {
   constructor(
-    private readonly usersExtractor : UsersExcractor
+    private readonly usersExtractor : UsersExtractor
   ) {}
   /* Les Methodes / Routes iront ici */
 }
@@ -51,12 +51,12 @@ Créer un fichier ```src/extractor/extractor.module.ts``` :
 ```ts
 import { Module } from "@nestjs/common";
 import { ExtractorController } from "./extractor.controller";
-import { UsersExcractor } from "./extractor.users.service";
+import { UsersExtractor } from "./extractor.users.service";
 
 @Module({
   imports : [],
   controllers: [ExtractorController],
-  providers: [UsersExcractor],
+  providers: [UsersExtractor],
   exports: [],
 })
 export class ExtractorModule {}

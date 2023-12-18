@@ -24,7 +24,7 @@ export const zipFileFilter = (
 };
 ```
 
-## Service UsersExcractor
+## Service UsersExtractor
 
 Dans le fichier ```src/extractor/extractor.users.service.ts``` ajouter les methodes :
 

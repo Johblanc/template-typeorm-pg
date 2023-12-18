@@ -10,7 +10,7 @@ import {
 import { Response } from 'express';
 import * as fs from 'fs';
 import * as AdmZip from 'adm-zip';
-import { UsersExcractor } from './extractor.users.service';
+import { UsersExtractor } from './extractor.users.service';
 import { UserAuthGuard } from 'src/auth/user_guard/user-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { ArchiveFileInterceptor } from 'src/utilities/FileInterceptors/archive.file-interceptor';
@@ -18,7 +18,9 @@ import { ArchiveFileInterceptor } from 'src/utilities/FileInterceptors/archive.f
 @ApiTags('setup')
 @Controller()
 export class ExtractorController {
-  constructor(private readonly usersExtractor: UsersExcractor) {}
+  constructor(
+    private readonly usersExtractor: UsersExtractor,
+  ) {}
   
   /** Extraction d'une archive zip */
   @UseGuards(UserAuthGuard)
