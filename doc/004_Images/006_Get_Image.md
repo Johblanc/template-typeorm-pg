@@ -1,3 +1,21 @@
+# Recupération d'une image
+
+## ImagesService
+
+Dans le fichier ```src/images/images.services.ts``` ajouter la methode ```findOne``` :
+
+```ts
+async findOne(dir: string, name: string) {
+  const image = await Image.findOneBy({ file: name, dir });
+  return image;
+}
+```
+
+## ImagesController
+
+Créer un fichier ```src/images/images.controller.ts``` :
+
+```ts
 import { Controller, Get, NotFoundException, Param, Res } from '@nestjs/common';
 import { ImagesService } from './images.service';
 import { Response } from 'express';
@@ -23,3 +41,21 @@ export class ImagesController {
     });
   }
 }
+```
+## Déclaration 
+
+Dans le fichier ```src/images/images.module.ts``` ajouter ```ImagesController``` aux controllers :
+
+```ts
+/* ... */
+import { ImagesController } from './images.controller';
+
+@Module({
+  controllers: [ImagesController],
+  /* ... */
+})
+export class ImagesModule {}
+```
+
+
+
