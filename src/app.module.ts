@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { ExtractorModule } from './extractor/extractor.module';
+import { Image } from './images/entities/image.entity';
 
 @Module({
   controllers: [],
@@ -21,6 +22,7 @@ import { ExtractorModule } from './extractor/extractor.module';
       database: process.env.DATABASE_NAME,
       entities: [
         User,
+        Image,
         /* Ajouter vos Entities */
       ],
       synchronize: true,

@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Image } from "src/images/entities/image.entity";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 
 /**
@@ -51,5 +52,8 @@ export class User extends BaseEntity {
   @Column({type:"timestamptz"})
   actif_at : string ;
 
-
+  @ApiProperty()
+  @OneToOne(() => Image, (image) => image.user, { nullable : true, eager : true})
+  @JoinColumn()
+  image : Image ;
 }
