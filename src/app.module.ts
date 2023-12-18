@@ -6,6 +6,7 @@ import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { ExtractorModule } from './extractor/extractor.module';
 import { Image } from './images/entities/image.entity';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   controllers: [],
@@ -28,6 +29,7 @@ import { Image } from './images/entities/image.entity';
       synchronize: true,
     }),
     UsersModule,
+    ImagesModule,
     ExtractorModule,
     /* Ajouter vos Modules */
   ],
