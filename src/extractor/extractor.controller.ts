@@ -14,12 +14,14 @@ import { UsersExtractor } from './extractor.users.service';
 import { UserAuthGuard } from 'src/auth/user_guard/user-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { ArchiveFileInterceptor } from 'src/utilities/FileInterceptors/archive.file-interceptor';
+import { ImagesExtractor } from './extractor.images.service';
 
 @ApiTags('setup')
 @Controller()
 export class ExtractorController {
   constructor(
     private readonly usersExtractor: UsersExtractor,
+    private readonly imagesExtractor: ImagesExtractor,
   ) {}
   
   /** Extraction d'une archive zip */
@@ -35,6 +37,7 @@ export class ExtractorController {
     fs.writeFileSync(
       `${process.env.DATA_PATH}/data/archive.json`,
       JSON.stringify({
+        images : await this.imagesExtractor.extract(),
         users: await this.usersExtractor.extract(),
         /* Pour chaque table ajouter une propriété */
       }),
@@ -72,6 +75,7 @@ export class ExtractorController {
 
     /* Nettoyage de la BdD */
     await this.usersExtractor.clear();
+    await this.imagesExtractor.clear();
     /* Ajouter ici les methodes clear() de chaque Extractor.
      * Si vous avait des relations entre vos tables, 
      * l'ordre de suppression est important.  
@@ -96,6 +100,7 @@ export class ExtractorController {
       if (fs.existsSync(`${process.env.DATA_PATH}/data/archive.json`)) {
         let tables = require(`${process.env.DATA_PATH}/data/archive.json`);
 
+        if (tables.images) await this.imagesExtractor.reset(tables.images);
         if (tables.users) await this.usersExtractor.reset(tables.users);
         /* Ajouter ici les methodes reset() de chaque Extractor.
          * Si vous avait des relations entre vos tables, 

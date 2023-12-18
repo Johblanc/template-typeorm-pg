@@ -22,6 +22,7 @@ export class UsersExtractor {
         creat_at: true,
         actif_at: true,
         mail: true,
+        image: { dir: true, file: true },
       },
     });
   }
