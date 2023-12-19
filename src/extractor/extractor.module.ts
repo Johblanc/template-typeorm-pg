@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ExtractorController } from "./extractor.controller";
 import { UsersExtractor } from "./extractor.users.service";
 import { ImagesExtractor } from "./extractor.images.service";
+import { RolesExtractor } from "./extractor.roles.service";
 
 
 
@@ -14,6 +15,7 @@ import { ImagesExtractor } from "./extractor.images.service";
   providers: [
     UsersExtractor,
     ImagesExtractor,
+    RolesExtractor,
   ],
   exports: [],
 })

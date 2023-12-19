@@ -15,6 +15,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ArchiveFileInterceptor } from 'src/utilities/FileInterceptors/archive.file-interceptor';
 import { ImagesExtractor } from './extractor.images.service';
 import { AdminAuthGuard } from 'src/auth/admin_guard/admin-auth.guard';
+import { RolesExtractor } from './extractor.roles.service';
 
 @ApiTags('Setup')
 @Controller()
@@ -22,6 +23,7 @@ export class ExtractorController {
   constructor(
     private readonly usersExtractor: UsersExtractor,
     private readonly imagesExtractor: ImagesExtractor,
+    private readonly rolesExtractor: RolesExtractor,
   ) {}
   
   /** Extraction d'une archive zip */
@@ -78,6 +80,7 @@ export class ExtractorController {
     /* Nettoyage de la BdD */
     await this.usersExtractor.clear();
     await this.imagesExtractor.clear();
+    await this.rolesExtractor.clear();
     /* Ajouter ici les methodes clear() de chaque Extractor.
      * Si vous avait des relations entre vos tables, 
      * l'ordre de suppression est important.  
@@ -102,6 +105,7 @@ export class ExtractorController {
       if (fs.existsSync(`${process.env.DATA_PATH}/data/archive.json`)) {
         let tables = require(`${process.env.DATA_PATH}/data/archive.json`);
 
+        await this.rolesExtractor.reset();
         if (tables.images) await this.imagesExtractor.reset(tables.images);
         if (tables.users) await this.usersExtractor.reset(tables.users);
         /* Ajouter ici les methodes reset() de chaque Extractor.
