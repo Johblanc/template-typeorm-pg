@@ -1,7 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Exclude } from "class-transformer";
+import { Exclude, Expose } from "class-transformer";
 import { Image } from "src/images/entities/image.entity";
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Role } from "src/roles/entities/role.entity";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 
 /**
@@ -46,14 +47,34 @@ export class User extends BaseEntity {
   @CreateDateColumn({type:"timestamptz"})
   creat_at : string ;
 
-
   /** Date de dernière activité de l'utilisateur */
   @ApiProperty()
   @Column({type:"timestamptz"})
   actif_at : string ;
 
+  /** Avatar de l'utilisateur */
   @ApiProperty()
   @OneToOne(() => Image, (image) => image.user, { nullable : true, eager : true})
   @JoinColumn()
   image : Image | null ;
+
+  /** Roles de l'utilisateur */
+  @ApiProperty()
+  @ManyToMany(() => Role, (role) => role.users , {eager : true})
+  @JoinTable()
+  sub_roles : Role[];
+
+  @ApiProperty()
+  @Expose()
+  get role (){
+    let acces_level = 0;
+    if (this.sub_roles.length > 0){
+      this.sub_roles.forEach( item => {
+        acces_level = Math.max(acces_level, item.acces_level);
+      })
+    }
+    return {
+      acces_level,
+    }
+  }
 }

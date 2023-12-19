@@ -47,6 +47,7 @@ export class AuthService {
         await user.save();
         const { password, ...result } = {
           ...user,
+          role: user.role,
           token: this.token(user),
         };
         return result;
@@ -66,22 +67,24 @@ export class AuthService {
     sub: string;
     iat: number;
   }): Promise<(Partial<User> & { token: string }) | null> {
-    const user = await User.findOne({where :{ pseudo: token.pseudo, id: token.sub },select:{
-      id: true,
-      pseudo: true,
-      first_name: true,
-      last_name: true,
-      creat_at: true,
-      actif_at: true,
-      mail: true
-    }});
-    
-
+    const user = await User.findOne({
+      where: { pseudo: token.pseudo, id: token.sub },
+      select: {
+        id: true,
+        pseudo: true,
+        first_name: true,
+        last_name: true,
+        creat_at: true,
+        actif_at: true,
+        mail: true,
+      },
+    });
     if (user !== null) {
       user.actif_at = new Date().toISOString();
       await user.save();
       return {
         ...user,
+        role: user.role,
         token: this.token(user),
       };
     }

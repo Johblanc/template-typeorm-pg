@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { ExtractorModule } from './extractor/extractor.module';
 import { Image } from './images/entities/image.entity';
 import { ImagesModule } from './images/images.module';
+import { Role } from './roles/entities/role.entity';
 
 @Module({
   controllers: [],
@@ -24,6 +25,7 @@ import { ImagesModule } from './images/images.module';
       entities: [
         User,
         Image,
+        Role,
         /* Ajouter vos Entities */
       ],
       synchronize: true,
