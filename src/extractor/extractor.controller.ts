@@ -16,7 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ArchiveFileInterceptor } from 'src/utilities/FileInterceptors/archive.file-interceptor';
 import { ImagesExtractor } from './extractor.images.service';
 
-@ApiTags('setup')
+@ApiTags('Setup')
 @Controller()
 export class ExtractorController {
   constructor(
