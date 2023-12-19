@@ -2,7 +2,9 @@ import { Controller, Get, NotFoundException, Param, Res } from '@nestjs/common';
 import { ImagesService } from './images.service';
 import { Response } from 'express';
 import * as fs from 'fs';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Images')
 @Controller('img')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
