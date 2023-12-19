@@ -5,7 +5,7 @@ import { AuthService } from '../auth.service';
 import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
-export class UserStrategy extends PassportStrategy(Strategy, "user") {
+export class VisitorStrategy extends PassportStrategy(Strategy, "visitor") {
   constructor(private readonly authService : AuthService) {
     
     super({
@@ -21,10 +21,6 @@ export class UserStrategy extends PassportStrategy(Strategy, "user") {
     if (user === null ){
       throw new UnauthorizedException("Vous n'êtes pas enregistré")
     }
-    if (!user.role || user.role.acces_level < 1){
-      throw new UnauthorizedException("Vous n'avez pas le niveau d'acces requis")
-    }
-
     return user;
   }
 }
