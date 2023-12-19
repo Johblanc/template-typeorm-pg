@@ -11,6 +11,6 @@ import { ImagesModule } from 'src/images/images.module';
   imports: [forwardRef(() => AuthModule), ImagesModule],
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [],
+  exports: [UsersService],
 })
 export class UsersModule {}
