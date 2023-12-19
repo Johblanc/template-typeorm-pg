@@ -26,6 +26,7 @@ import { GetUsersQueryDto } from './dto/get-users.query.dto';
 import { pagingGenerator } from 'src/utilities/Paging/Paging.generator';
 import { UserImageFileInterceptor } from 'src/utilities/FileInterceptors/userPhoto.file-interceptor';
 import { ImagesService } from 'src/images/images.service';
+import { VisitorAuthGuard } from 'src/auth/visitor_guard/visitor-auth.guard';
 
 /**
  * Routage et contrôle des requetes pour la table users
@@ -80,8 +81,10 @@ export class UsersController {
    * @param dto parametre de modification d'un utilisateur
    * @returns L'utilidateur et le token
    */
-  @ApiBearerAuth()
-  @UseGuards(UserAuthGuard)
+  @ApiBearerAuth("visitor")
+  @ApiBearerAuth("user")
+  @ApiBearerAuth("admin")
+  @UseGuards(VisitorAuthGuard)
   @UseInterceptors(UserImageFileInterceptor)
   @Patch()
   async update(
@@ -137,7 +140,8 @@ export class UsersController {
    *
    * @returns l'utilisateur recherché
    */
-  @ApiBearerAuth()
+  @ApiBearerAuth("user")
+  @ApiBearerAuth("admin")
   @UseGuards(UserAuthGuard)
   @Get(':id')
   async getOne(@Param('id') id: string, @GetToken() token: string) {
@@ -157,7 +161,8 @@ export class UsersController {
    *
    * @returns l'utilisateur recherché
    */
-  @ApiBearerAuth()
+  @ApiBearerAuth("user")
+  @ApiBearerAuth("admin")
   @UseGuards(UserAuthGuard)
   @Get()
   async getMany(@Query() query: GetUsersQueryDto, @GetToken() token: string) {

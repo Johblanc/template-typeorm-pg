@@ -11,10 +11,10 @@ import { Response } from 'express';
 import * as fs from 'fs';
 import * as AdmZip from 'adm-zip';
 import { UsersExtractor } from './extractor.users.service';
-import { UserAuthGuard } from 'src/auth/user_guard/user-auth.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ArchiveFileInterceptor } from 'src/utilities/FileInterceptors/archive.file-interceptor';
 import { ImagesExtractor } from './extractor.images.service';
+import { AdminAuthGuard } from 'src/auth/admin_guard/admin-auth.guard';
 
 @ApiTags('Setup')
 @Controller()
@@ -25,7 +25,8 @@ export class ExtractorController {
   ) {}
   
   /** Extraction d'une archive zip */
-  @UseGuards(UserAuthGuard)
+  @ApiBearerAuth("admin")
+  @UseGuards(AdminAuthGuard)
   @Get('extract')
   async extract(@Res() res: Response) {
     /* Si le dossier data n'existe pas, on le crée */
@@ -61,7 +62,8 @@ export class ExtractorController {
   }
 
   /** Réhinitialisation de la BdD depuis une archive zip */
-  @UseGuards(UserAuthGuard)
+  @ApiBearerAuth("admin")
+  @UseGuards(AdminAuthGuard)
   @Post('reset')
   @UseInterceptors(ArchiveFileInterceptor)
   async reset(@UploadedFiles() savedFiles: Express.Multer.File[] = []) {

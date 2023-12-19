@@ -23,6 +23,9 @@ async function bootstrap() {
     .setTitle('titre API')
     .setDescription('description API')
     .setVersion('1.0')
+    .addBearerAuth(undefined,"visitor")
+    .addBearerAuth(undefined,"user")
+    .addBearerAuth(undefined,"admin")
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
