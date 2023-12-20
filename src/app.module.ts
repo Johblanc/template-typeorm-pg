@@ -9,6 +9,7 @@ import { Image } from './images/entities/image.entity';
 import { ImagesModule } from './images/images.module';
 import { Role } from './roles/entities/role.entity';
 import { RolesModule } from './roles/roles.module';
+import { Contact } from './contacts/entities/contact.entity';
 
 @Module({
   controllers: [],
@@ -27,6 +28,7 @@ import { RolesModule } from './roles/roles.module';
         User,
         Image,
         Role,
+        Contact,
         /* Ajouter vos Entities */
       ],
       synchronize: true,

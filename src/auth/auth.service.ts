@@ -38,16 +38,20 @@ export class AuthService {
         pseudo: true,
         password: true,
       },
+      relations: {
+        contacts_a : {user_b : true},
+        contacts_b : {user_a : true},
+      }
     });
     if (user !== null) {
+      
       const isOk = await bcrypt.compare(password, user.password);
 
       if (isOk) {
         user.actif_at = new Date().toISOString();
         await user.save();
         const { password, ...result } = {
-          ...user,
-          role: user.role,
+          ...user.view(user),
           token: this.token(user),
         };
         return result;
@@ -78,6 +82,10 @@ export class AuthService {
         actif_at: true,
         mail: true,
       },
+      relations: {
+        contacts_a : {user_b : true},
+        contacts_b : {user_a : true},
+      }
     });
     if (user !== null) {
       user.actif_at = new Date().toISOString();

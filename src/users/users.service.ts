@@ -29,7 +29,13 @@ export class UsersService {
    * @returns l'utilisateur, si il existe, sinon null
    */
   async findOneByPseudo(pseudo: string): Promise<User | null> {
-    return await User.findOneBy({ pseudo });
+    return await User.findOne({
+      where: { pseudo },
+      relations: {
+        contacts_a: { user_b: true },
+        contacts_b: { user_a: true },
+      },
+    });
   }
 
   /**
@@ -39,7 +45,13 @@ export class UsersService {
    * @returns l'utilisateur, si il existe, sinon null
    */
   async findOneByMail(mail: string): Promise<User | null> {
-    return await User.findOneBy({ mail });
+    return await User.findOne({
+      where: { mail },
+      relations: {
+        contacts_a: { user_b: true },
+        contacts_b: { user_a: true },
+      },
+    });
   }
 
   /**
@@ -49,7 +61,13 @@ export class UsersService {
    * @returns l'utilisateur, si il existe, sinon null
    */
   async findOneById(id: string): Promise<User | null> {
-    return await User.findOneBy({ id });
+    return await User.findOne({
+      where: { id },
+      relations: {
+        contacts_a: { user_b: true },
+        contacts_b: { user_a: true },
+      },
+    });
   }
 
   /**
@@ -63,10 +81,17 @@ export class UsersService {
 
     const order = sorterQuery<User>(query.sort_keys, query.sort_orders);
 
-    const users = (await User.find({ order }))
-      .filter((item) =>
-        usersFilter(item, pseudo, first_name, last_name, actif_from),
-      )
+    const users = (
+      await User.find({
+        order,
+        relations: {
+          contacts_a: { user_b: true },
+          contacts_b: { user_a: true },
+        },
+      })
+    ).filter((item) =>
+      usersFilter(item, pseudo, first_name, last_name, actif_from),
+    );
 
     return users;
   }
@@ -79,14 +104,20 @@ export class UsersService {
    * @returns l'utilisateur modifié
    */
   async update(id: string, dto: Partial<User>): Promise<User | null> {
-    const user = await User.findOneBy({ id });
+    const user = await User.findOne({
+      where: { id },
+      relations: {
+        contacts_a: { user_b: true },
+        contacts_b: { user_a: true },
+      },
+    });
     if (user) {
-      if (dto.pseudo!== undefined) user.pseudo = dto.pseudo;
-      if (dto.password!== undefined) user.password = dto.password;
-      if (dto.mail!== undefined) user.mail = dto.mail;
-      if (dto.first_name!== undefined) user.first_name = dto.first_name;
-      if (dto.last_name!== undefined) user.last_name = dto.last_name;
-      if (dto.image!== undefined) user.image = dto.image;
+      if (dto.pseudo !== undefined) user.pseudo = dto.pseudo;
+      if (dto.password !== undefined) user.password = dto.password;
+      if (dto.mail !== undefined) user.mail = dto.mail;
+      if (dto.first_name !== undefined) user.first_name = dto.first_name;
+      if (dto.last_name !== undefined) user.last_name = dto.last_name;
+      if (dto.image !== undefined) user.image = dto.image;
       await user.save();
     }
     return user;
