@@ -20,7 +20,6 @@ import { GetToken } from 'src/auth/get-token.decorator';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { LocalAuthGuard } from 'src/auth/local_guard/local-auth.guard';
 import { User } from './entities/user.entity';
-import { UserAuthGuard } from 'src/auth/user_guard/user-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUsersQueryDto } from './dto/get-users.query.dto';
 import { pagingGenerator } from 'src/utilities/Paging/Paging.generator';
@@ -60,16 +59,17 @@ export class UsersController {
     const newUser = await this.usersService.register(dto);
     return {
       message: `${dto.pseudo} bien enregistré`,
-      data: newUser,
+      data: newUser.view('self'),
     };
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@GetUser() user: User, @GetToken() token: string) {
+    const { sub_roles, ...result } = user;
     return {
       message: 'Vous êtes connecté',
-      data: user,
+      data: result,
       token: token,
     };
   }
@@ -81,9 +81,9 @@ export class UsersController {
    * @param dto parametre de modification d'un utilisateur
    * @returns L'utilidateur et le token
    */
-  @ApiBearerAuth("visitor")
-  @ApiBearerAuth("user")
-  @ApiBearerAuth("admin")
+  @ApiBearerAuth('visitor')
+  @ApiBearerAuth('user')
+  @ApiBearerAuth('admin')
   @UseGuards(VisitorAuthGuard)
   @UseInterceptors(UserImageFileInterceptor)
   @Patch()
@@ -93,7 +93,6 @@ export class UsersController {
     @Body() dto: UpdateUserDto,
     @UploadedFiles() savedFiles: Express.Multer.File[] = [],
   ) {
-
     if (dto.pseudo) {
       const pseudoExist = await this.usersService.findOneByPseudo(dto.pseudo);
 
@@ -113,24 +112,30 @@ export class UsersController {
       }
     }
 
-    let updateUser = await this.usersService.update(user.id, dto) as User
+    let updateUser = (await this.usersService.update(user.id, dto)) as User;
 
-    if (savedFiles.length > 0){
-
-      if (updateUser.image !== null){
-        await this.usersService.update(user.id, {image : null}) ;
-        await this.imagesService.remove(updateUser.image.dir, updateUser.image.file)
+    if (savedFiles.length > 0) {
+      if (updateUser.image !== null) {
+        await this.usersService.update(user.id, { image: null });
+        await this.imagesService.remove(
+          updateUser.image.dir,
+          updateUser.image.file,
+        );
       }
 
-      const image = await this.imagesService.createOrUpdate(savedFiles[0],"img/users",updateUser!.id, `Avatar ${updateUser!.pseudo}`)
-  
-      updateUser = await this.usersService.update(user.id, {image}) as User
-    }
+      const image = await this.imagesService.createOrUpdate(
+        savedFiles[0],
+        'img/users',
+        updateUser!.id,
+        `Avatar ${updateUser!.pseudo}`,
+      );
 
+      updateUser = (await this.usersService.update(user.id, { image })) as User;
+    }
 
     return {
       message: 'Profile mis à jour',
-      data: updateUser,
+      data: updateUser.view('self'),
       token: token,
     };
   }
@@ -140,18 +145,24 @@ export class UsersController {
    *
    * @returns l'utilisateur recherché
    */
-  @ApiBearerAuth("user")
-  @ApiBearerAuth("admin")
-  @UseGuards(UserAuthGuard)
+  @ApiBearerAuth('visitor')
+  @ApiBearerAuth('user')
+  @ApiBearerAuth('admin')
+  @UseGuards(VisitorAuthGuard)
   @Get(':id')
-  async getOne(@Param('id') id: string, @GetToken() token: string) {
-    const user = await this.usersService.findOneById(id);
-    if (user === null) {
+  async getOne(
+    @Param('id') id: string,
+    @GetUser() user: User,
+    @GetToken() token: string,
+  ) {
+    const targetUser = await this.usersService.findOneById(id);
+    if (targetUser === null) {
       throw new NotFoundException("L'utilisateur n'est pas enregistré");
     }
+
     return {
       message: "Récupération d'un utilisateur",
-      data: user,
+      data: targetUser.view(user),
       token: token,
     };
   }
@@ -161,11 +172,16 @@ export class UsersController {
    *
    * @returns l'utilisateur recherché
    */
-  @ApiBearerAuth("user")
-  @ApiBearerAuth("admin")
-  @UseGuards(UserAuthGuard)
+  @ApiBearerAuth('visitor')
+  @ApiBearerAuth('user')
+  @ApiBearerAuth('admin')
+  @UseGuards(VisitorAuthGuard)
   @Get()
-  async getMany(@Query() query: GetUsersQueryDto, @GetToken() token: string) {
+  async getMany(
+    @Query() query: GetUsersQueryDto,
+    @GetUser() user: User,
+    @GetToken() token: string,
+  ) {
     const users = await this.usersService.findMany(query);
 
     const { pages, data } = pagingGenerator<GetUsersQueryDto, User>(
@@ -175,7 +191,7 @@ export class UsersController {
 
     return {
       message: 'Plusieurs utilisateurs',
-      data,
+      data: data.map((item) => item.view(user)),
       token,
       pages,
     };

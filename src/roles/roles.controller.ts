@@ -41,7 +41,7 @@ export class RolesController {
 
     return {
       message: 'Promotion au role admin',
-      data: promoteUser,
+      data: promoteUser?.view("admin"),
       token: token,
     };
   }
@@ -62,7 +62,7 @@ export class RolesController {
 
     return {
       message: "Promotion d'un utilisateur",
-      data: promoteUser,
+      data: promoteUser?.view("admin"),
       token: token,
     };
   }

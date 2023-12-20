@@ -1,80 +1,139 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Exclude, Expose } from "class-transformer";
-import { Image } from "src/images/entities/image.entity";
-import { Role } from "src/roles/entities/role.entity";
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude, Expose } from 'class-transformer';
+import { Image } from 'src/images/entities/image.entity';
+import { Role } from 'src/roles/entities/role.entity';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 /**
  * Utilisateur de l'Api
  */
-@Entity("users")
+@Entity('users')
 export class User extends BaseEntity {
-
   /** Identifiant de l'Utilisateur */
   @ApiProperty()
-  @PrimaryGeneratedColumn("uuid")
-  id : string ;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   /** Pseudonime de l'Utilisateur */
   @ApiProperty()
-  @Column({ unique : true})
-  pseudo : string ;
+  @Column({ unique: true })
+  pseudo: string;
 
   /** Le mot de passe de l'Utilisateur */
   @Exclude()
   @ApiProperty()
   @Column()
-  password : string ;
+  password: string;
 
   /** Prénom de l'Utilisateur */
   @ApiProperty()
-  @Column({type: "character varying" , nullable: true})
-  first_name : string | null;
+  @Column({ type: 'character varying', nullable: true })
+  first_name: string | null;
 
   /** Nom de l'Utilisateur */
   @ApiProperty()
-  @Column({type:"character varying" , nullable: true})
-  last_name : string | null ;
-  
+  @Column({ type: 'character varying', nullable: true })
+  last_name: string | null;
+
   /** Mail de l'Utilisateur */
   @ApiProperty()
-  @Column({type:"character varying" ,nullable: true, select : false})
-  mail : string | null ;
-  
+  @Column({ type: 'character varying', nullable: true, select: false })
+  mail: string | null;
+
   /** Date de création de l'utilisateur */
   @ApiProperty()
-  @CreateDateColumn({type:"timestamptz"})
-  creat_at : string ;
+  @CreateDateColumn({ type: 'timestamptz' })
+  creat_at: string;
 
   /** Date de dernière activité de l'utilisateur */
   @ApiProperty()
-  @Column({type:"timestamptz"})
-  actif_at : string ;
+  @Column({ type: 'timestamptz' })
+  actif_at: string;
 
   /** Avatar de l'utilisateur */
   @ApiProperty()
-  @OneToOne(() => Image, (image) => image.user, { nullable : true, eager : true})
+  @OneToOne(() => Image, (image) => image.user, { nullable: true, eager: true })
   @JoinColumn()
-  image : Image | null ;
+  image: Image | null;
 
   /** Roles de l'utilisateur */
   @ApiProperty()
-  @ManyToMany(() => Role, (role) => role.users , {eager : true})
+  @ManyToMany(() => Role, (role) => role.users, { eager: true })
   @JoinTable()
-  sub_roles : Role[];
+  sub_roles: Role[];
 
   @ApiProperty()
   @Expose()
-  get role (){
+  get role() {
     let acces_level = 0;
-    if (this.sub_roles.length > 0){
-      this.sub_roles.forEach( item => {
+    if (this.sub_roles.length > 0) {
+      this.sub_roles.forEach((item) => {
         acces_level = Math.max(acces_level, item.acces_level);
-      })
+      });
     }
     return {
       acces_level,
+    };
+  }
+
+  view(claimant?: User | "self" | "admin" | "user" ) {
+
+    let role: string | undefined = undefined;
+
+    if(typeof claimant === "string"){
+      role = claimant
     }
+    else if (claimant !== undefined){
+      if (claimant.id === this.id) {
+        role = 'self';
+      } else if (claimant.role.acces_level === 2) {
+        role = 'admin';
+      } else if (claimant.role.acces_level === 1) {
+        role = 'user';
+      }
+    }
+
+    const base = {
+      id: this.id,
+      pseudo: this.pseudo,
+      image: this.image,
+    };
+    const forUser = {
+      ...base,
+      actif_at: this.actif_at,
+      role: this.role,
+    };
+    const forSelf = {
+      ...forUser,
+      first_name: this.first_name,
+      last_name: this.last_name,
+      mail: this.mail,
+      creat_at: this.creat_at,
+    };
+    const forAdmin = {
+      ...forSelf,
+      sub_roles: this.sub_roles,
+    };
+
+    if (role === 'admin') {
+      return forAdmin;
+    }
+    if (role === 'self') {
+      return forSelf;
+    }
+    if (role === 'user') {
+      return forUser;
+    }
+    return base;
   }
 }
