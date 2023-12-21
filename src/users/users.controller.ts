@@ -6,6 +6,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -149,13 +150,14 @@ export class UsersController {
   @ApiBearerAuth('user')
   @ApiBearerAuth('admin')
   @UseGuards(VisitorAuthGuard)
-  @Get(':id')
+  @Get(':uuid')
   async getOne(
-    @Param('id') id: string,
+    @Param('uuid', new ParseUUIDPipe()) uuid: string,
     @GetUser() user: User,
     @GetToken() token: string,
   ) {
-    const targetUser = await this.usersService.findOneById(id);
+
+    const targetUser = await this.usersService.findOneById(uuid);
     if (targetUser === null) {
       throw new NotFoundException("L'utilisateur n'est pas enregistré");
     }
