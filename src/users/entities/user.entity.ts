@@ -108,10 +108,10 @@ export class User extends BaseEntity {
     ];
     return {
       wait_for: c
-        .filter((item) => item.status === '01')
+        .filter((item) => item.status === '10')
         .map((item) => item.user),
       wait_you: c
-        .filter((item) => item.status === '10')
+        .filter((item) => item.status === '01')
         .map((item) => item.user),
       friends: c
         .filter((item) => item.status === '11')
