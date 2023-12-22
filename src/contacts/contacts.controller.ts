@@ -190,4 +190,22 @@ export class ContactsController {
       token: token,
     };
   }
+  
+  @ApiBearerAuth('visitor')
+  @ApiBearerAuth('user')
+  @ApiBearerAuth('admin')
+  @UseGuards(VisitorAuthGuard)
+  @Get("friends")
+  async getFriends(
+    @GetUser() user: User,
+    @GetToken() token: string,
+  ) {
+    const fullUser = await this.usersService.findOneById(user.id)
+
+    return {
+      message: "Recupération de tous les contacts amis",
+      data: fullUser?.viewContacts(fullUser)?.friends,
+      token: token,
+    };
+  }
 }
