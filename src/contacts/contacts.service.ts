@@ -90,4 +90,40 @@ export class ContactsService {
 
     return null;
   }
+
+  async remove(
+    user_a: User,
+    user_b: User,
+  ) {
+    let contact = await Contact.findOne({
+      where: {
+        user_a: { id: user_a.id },
+        user_b: { id: user_b.id },
+      },
+      relations: {
+        user_a: true,
+        user_b: true,
+      },
+    });
+
+    if (contact !== null) {
+      return await contact.remove()
+    }
+    contact = await Contact.findOne({
+      where: {
+        user_a: { id: user_b.id },
+        user_b: { id: user_a.id },
+      },
+      relations: {
+        user_a: true,
+        user_b: true,
+      },
+    });
+
+    if (contact !== null) {
+      return await contact.remove()
+    }
+
+    return null;
+  }
 }
