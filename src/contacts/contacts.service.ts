@@ -4,8 +4,13 @@ import { Contact } from './entities/contact.entity';
 
 @Injectable()
 export class ContactsService {
-  async create(user_a: User, user_b: User) {
-    const contact = Contact.create({ user_a, user_b });
+  async create(
+    user_a: User,
+    user_b: User,
+    status_a?: 0 | 1 | 2,
+    status_b?: 0 | 1 | 2,
+  ) {
+    const contact = Contact.create({ user_a, user_b, status_a, status_b });
     return await contact.save();
   }
   async findOneStatus(user_a: User, user_b: User) {
@@ -59,13 +64,13 @@ export class ContactsService {
     });
 
     if (contact !== null) {
-      if (status_a !== undefined){
+      if (status_a !== undefined) {
         contact.status_a = status_a;
       }
-      if (status_b !== undefined){
+      if (status_b !== undefined) {
         contact.status_b = status_b;
       }
-      return await contact.save()
+      return await contact.save();
     }
     contact = await Contact.findOne({
       where: {
@@ -79,22 +84,19 @@ export class ContactsService {
     });
 
     if (contact !== null) {
-      if (status_a !== undefined){
+      if (status_a !== undefined) {
         contact.status_b = status_a;
       }
-      if (status_b !== undefined){
+      if (status_b !== undefined) {
         contact.status_a = status_b;
       }
-      return await contact.save()
+      return await contact.save();
     }
 
     return null;
   }
 
-  async remove(
-    user_a: User,
-    user_b: User,
-  ) {
+  async remove(user_a: User, user_b: User) {
     let contact = await Contact.findOne({
       where: {
         user_a: { id: user_a.id },
@@ -107,7 +109,7 @@ export class ContactsService {
     });
 
     if (contact !== null) {
-      return await contact.remove()
+      return await contact.remove();
     }
     contact = await Contact.findOne({
       where: {
@@ -121,7 +123,7 @@ export class ContactsService {
     });
 
     if (contact !== null) {
-      return await contact.remove()
+      return await contact.remove();
     }
 
     return null;

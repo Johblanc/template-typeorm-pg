@@ -39,7 +39,7 @@ export class ContactsController {
     const status = (await this.contactsService.findOneStatus(user,targetUser));
 
     if(status.split('')[0] === "1"){
-      throw new ConflictException("Cette demande à déjà été réalisée");
+      throw new ConflictException("Cette demande a déjà été réalisée");
     }
     else if(status === "00"){
       await this.contactsService.create(user, targetUser)
@@ -92,6 +92,45 @@ export class ContactsController {
 
     return {
       message: "Refus réalisé",
+      data: updateUser!.view(user),
+      token: token,
+    };
+  }
+
+  @ApiBearerAuth('visitor')
+  @ApiBearerAuth('user')
+  @ApiBearerAuth('admin')
+  @UseGuards(VisitorAuthGuard)
+  @Patch('bane/:uuid')
+  async bane(
+    @Param('uuid', new ParseUUIDPipe()) uuid: string,
+    @GetUser() user: User,
+    @GetToken() token: string,
+  ) {
+    const targetUser = await this.usersService.findOneById(uuid);
+    if (targetUser === null) {
+      throw new NotFoundException("L'utilisateur n'est pas enregistré");
+    }
+    if (targetUser.id === user.id) {
+      throw new ConflictException("Vous ne pouvez vous bannir en contact");
+    }
+
+    const status = (await this.contactsService.findOneStatus(user,targetUser));
+    
+    if(status.split('')[0] === "2"){
+      throw new ConflictException("Ce bannissement a déjà été réalisé");
+    }
+    else if(status === "00"){
+      await this.contactsService.create(user, targetUser,2)
+    }
+    else {
+      await this.contactsService.update(user, targetUser,2)
+    }
+
+    const updateUser = await this.usersService.findOneById(user.id)
+
+    return {
+      message: "Bannissement réalisé",
       data: updateUser!.view(user),
       token: token,
     };
