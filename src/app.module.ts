@@ -10,6 +10,7 @@ import { ImagesModule } from './images/images.module';
 import { Role } from './roles/entities/role.entity';
 import { RolesModule } from './roles/roles.module';
 import { Contact } from './contacts/entities/contact.entity';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
   controllers: [],
@@ -37,6 +38,7 @@ import { Contact } from './contacts/entities/contact.entity';
     ImagesModule,
     ExtractorModule,
     RolesModule,
+    ContactsModule,
     /* Ajouter vos Modules */
   ],
 })
