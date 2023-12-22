@@ -1,4 +1,4 @@
-import { ConflictException, Controller, NotFoundException, Param, ParseUUIDPipe, Patch, UseGuards } from '@nestjs/common';
+import { ConflictException, Controller, Get, NotFoundException, Param, ParseUUIDPipe, Patch, UseGuards } from '@nestjs/common';
 import { ContactsService } from './contacts.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { VisitorAuthGuard } from 'src/auth/visitor_guard/visitor-auth.guard';
@@ -132,6 +132,25 @@ export class ContactsController {
     return {
       message: "Bannissement réalisé",
       data: updateUser!.view(user),
+      token: token,
+    };
+  }
+
+  @ApiBearerAuth('visitor')
+  @ApiBearerAuth('user')
+  @ApiBearerAuth('admin')
+  @UseGuards(VisitorAuthGuard)
+  @Get()
+  async getAll(
+    @GetUser() user: User,
+    @GetToken() token: string,
+  ) {
+    const fullUser = await this.usersService.findOneById(user.id)
+    
+    
+    return {
+      message: "Recupération de tous les contacts",
+      data: fullUser?.viewContacts(fullUser),
       token: token,
     };
   }
