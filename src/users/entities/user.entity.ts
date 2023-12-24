@@ -87,7 +87,7 @@ export class User extends BaseEntity {
   @Expose()
   get role() {
     let acces_level = 0;
-    if (this.sub_roles.length > 0) {
+    if (this.sub_roles && this.sub_roles.length > 0) {
       this.sub_roles.forEach((item) => {
         acces_level = Math.max(acces_level, item.acces_level);
       });
