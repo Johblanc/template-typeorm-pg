@@ -33,11 +33,6 @@ export class AuthService {
   ): Promise<(Partial<User> & { token: string }) | null> {
     const user = await User.findOne({
       where: { pseudo },
-      select: {
-        id: true,
-        pseudo: true,
-        password: true,
-      },
       relations: {
         contacts_a : {user_b : true},
         contacts_b : {user_a : true},

@@ -50,7 +50,7 @@ export class User extends BaseEntity {
 
   /** Mail de l'Utilisateur */
   @ApiProperty()
-  @Column({ type: 'character varying', nullable: true, select: false })
+  @Column({ type: 'character varying', nullable: true })
   mail: string | null;
 
   /** Date de création de l'utilisateur */
@@ -97,7 +97,9 @@ export class User extends BaseEntity {
     };
   }
 
-  viewContacts(claimant?: User | 'self' | 'admin' | 'user'): TContact | undefined {
+  viewContacts(
+    claimant?: User | 'self' | 'admin' | 'user',
+  ): TContact | undefined {
     if (this.contacts_a === undefined || this.contacts_b === undefined) {
       return undefined;
     }
@@ -125,7 +127,9 @@ export class User extends BaseEntity {
     };
   }
 
-  view(claimant?: User | 'self' | 'admin' | 'user'): Partial<User> & {contacts? : TContact | undefined} {
+  view(
+    claimant?: User | 'self' | 'admin' | 'user',
+  ): Partial<User> & { contacts?: TContact | undefined } {
     let role: string | undefined = undefined;
 
     if (typeof claimant === 'string') {
