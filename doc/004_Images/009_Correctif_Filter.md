@@ -1,6 +1,10 @@
+# Correctif imageFileFilter
+
+Dans ```src/utilities/FileInterceptors/image.file-filter.ts``` corriger le ```RegExp``` :
+
+```ts
 import { BadRequestException } from '@nestjs/common';
 
-/** Contrôle du typage pour un fichier image */
 export const imageFileFilter = (
   _: any,
   file: Express.Multer.File,
@@ -12,3 +16,4 @@ export const imageFileFilter = (
     cb(new BadRequestException(`type de fichier non supporté`), false);
   }
 };
+```
