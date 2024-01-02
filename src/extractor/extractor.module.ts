@@ -3,6 +3,7 @@ import { ExtractorController } from "./extractor.controller";
 import { UsersExtractor } from "./extractor.users.service";
 import { ImagesExtractor } from "./extractor.images.service";
 import { RolesExtractor } from "./extractor.roles.service";
+import { ContactsExtractor } from "./extractor.contacts.service";
 
 
 
@@ -16,6 +17,7 @@ import { RolesExtractor } from "./extractor.roles.service";
     UsersExtractor,
     ImagesExtractor,
     RolesExtractor,
+    ContactsExtractor,
   ],
   exports: [],
 })
