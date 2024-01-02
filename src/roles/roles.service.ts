@@ -15,6 +15,7 @@ export class RolesService {
   }
 
   async promote(userId: string, sub_roles: string[]) {
+
     const roles = await Role.find({
       where: sub_roles.map((item) => {
         return { name: item };
@@ -22,7 +23,7 @@ export class RolesService {
     });
     const user = await User.findOneBy({ id: userId });
     if (user !== null) {
-      user.sub_roles = roles;
+      user.sub_roles = sub_roles.length !== 0 ? roles : [];
       await user.save();
     }
     return user;
