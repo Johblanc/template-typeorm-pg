@@ -25,22 +25,22 @@ export class RolesExtractor {
   async reset() {
     const roles = [
       {
-        nmae : "visitor",
+        name : "visitor",
         acces_level : 0
       },
       {
-        nmae : "user",
+        name : "user",
         acces_level : 1
       },
       {
-        nmae : "admin",
+        name : "admin",
         acces_level : 2
       }
     ]
 
     return await Promise.all(
       roles.map(async (item) => {
-        const newRole = Role.create(item);
+        const newRole = Role.create({...item});
         return await newRole.save();
       }),
     );
