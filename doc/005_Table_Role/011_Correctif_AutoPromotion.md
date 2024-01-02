@@ -1,3 +1,10 @@
+# Correctif Autopromotion
+
+Ajout des roles si il n'existe pas encore.
+
+Dans ```src/roles/roles.service.ts```
+
+```ts
 import { Injectable } from '@nestjs/common';
 import { Role } from './entities/role.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -9,30 +16,10 @@ export class RolesService {
     if (roles.length === 0) {
       roles = await this.reset()
     }
-    
-    const user = await User.findOneBy({ id: userId });
-    if (user !== null) {
-      user.sub_roles = roles;
-      await user.save();
-    }
-    return user;
+    /* ... */
   }
 
-  async promote(userId: string, sub_roles: string[]) {
-
-    const roles = await Role.find({
-      where: sub_roles.map((item) => {
-        return { name: item };
-      }),
-    });
-    const user = await User.findOneBy({ id: userId });
-    if (user !== null) {
-      user.sub_roles = sub_roles.length !== 0 ? roles : [];
-      await user.save();
-    }
-    return user;
-  }
-
+  /* ... */
   
   async reset() {
     const roles = [
@@ -58,3 +45,4 @@ export class RolesService {
     );
   }
 }
+```
