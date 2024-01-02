@@ -70,6 +70,9 @@ export class ContactsService {
       if (status_b !== undefined) {
         contact.status_b = status_b;
       }
+      if (contact.status_a === 0 && contact.status_b === 0 ){
+        return await contact.remove();
+      }
       return await contact.save();
     }
     contact = await Contact.findOne({
@@ -89,6 +92,9 @@ export class ContactsService {
       }
       if (status_b !== undefined) {
         contact.status_a = status_b;
+      }
+      if (contact.status_a === 0 && contact.status_b === 0 ){
+        return await contact.remove();
       }
       return await contact.save();
     }
