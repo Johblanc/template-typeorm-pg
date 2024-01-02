@@ -37,7 +37,7 @@ export class ContactsController {
     }
 
     const status = (await this.contactsService.findOneStatus(user,targetUser));
-
+    
     if(status.split('')[0] === "1"){
       throw new ConflictException("Cette demande a déjà été réalisée");
     }
@@ -101,8 +101,8 @@ export class ContactsController {
   @ApiBearerAuth('user')
   @ApiBearerAuth('admin')
   @UseGuards(VisitorAuthGuard)
-  @Patch('bane/:uuid')
-  async bane(
+  @Patch('ban/:uuid')
+  async ban(
     @Param('uuid', new ParseUUIDPipe()) uuid: string,
     @GetUser() user: User,
     @GetToken() token: string,
