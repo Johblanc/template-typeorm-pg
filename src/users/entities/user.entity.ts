@@ -135,10 +135,10 @@ export class User extends BaseEntity {
     if (typeof claimant === 'string') {
       role = claimant;
     } else if (claimant !== undefined) {
-      if (claimant.id === this.id) {
-        role = 'self';
-      } else if (claimant.role.acces_level === 2) {
+      if (claimant.role.acces_level === 2) {
         role = 'admin';
+      } else if (claimant.id === this.id) {
+        role = 'self';
       } else if (claimant.role.acces_level === 1) {
         role = 'user';
       }
